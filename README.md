@@ -1,5 +1,7 @@
 # bench
 An ideal bench design.
+- Printer
+- Copier & Scanner
 - 3D Printer
 - CNC
 - Laser Cutter
@@ -18,3 +20,4 @@ An ideal bench design.
 - Coax Cable holder
 - No shadow lights
 - Switch with serve nodes
+- Antenna switch
