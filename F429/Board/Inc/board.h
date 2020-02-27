@@ -12,6 +12,7 @@ void SDRAM_Initialization_Sequence(SDRAM_HandleTypeDef *hsdram, FMC_SDRAM_Comman
 uint16_t STMPE811ReadID();
 void STMPE811Start();
 void STMPE811ClearTouchIT();
-void STMPE811GetXY(uint16_t *x, uint16_t *y);
+void STMPE811GetXY(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t height);
+uint8_t STMPE811Read(uint8_t reg);
 
 #endif

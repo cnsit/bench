@@ -61,9 +61,9 @@ void MX_FMC_Init(void)
   {
     Error_Handler( );
   }
-
   FMC_SDRAM_CommandTypeDef 	command;
   SDRAM_Initialization_Sequence(&hsdram1, &command);
+
 }
 
 static uint32_t FMC_Initialized = 0;

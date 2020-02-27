@@ -55,12 +55,16 @@
 /* USER CODE BEGIN Variables */
 __IO uint32_t freq_count;
 __IO float temperature;
+__IO uint16_t touch_x, touch_y;
+__IO uint8_t touch_state;
 /* USER CODE END Variables */
 osThreadId tskIdelHandle;
 osThreadId tskDisplayHandle;
 osThreadId tskTemperatureHandle;
+osThreadId tskTouchHandle;
 osMessageQId queFrameHandle;
 osMessageQId queFreqCountHandle;
+osMessageQId queTouchHandle;
 osTimerId timKeyDownHandle;
 
 /* Private function prototypes -----------------------------------------------*/
@@ -71,6 +75,7 @@ osTimerId timKeyDownHandle;
 void fnIdel(void const * argument);
 void fnDisplay(void const * argument);
 void fnTemperature(void const * argument);
+void fnTouch(void const * argument);
 void cbKeyDown(void const * argument);
 
 void MX_FREERTOS_Init(void); /* (MISRA C 2004 rule 8.1) */
@@ -188,6 +193,10 @@ void MX_FREERTOS_Init(void) {
   osMessageQDef(queFreqCount, 1, uint32_t);
   queFreqCountHandle = osMessageCreate(osMessageQ(queFreqCount), NULL);
 
+  /* definition and creation of queTouch */
+  osMessageQDef(queTouch, 1, uint16_t);
+  queTouchHandle = osMessageCreate(osMessageQ(queTouch), NULL);
+
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
@@ -204,6 +213,10 @@ void MX_FREERTOS_Init(void) {
   /* definition and creation of tskTemperature */
   osThreadDef(tskTemperature, fnTemperature, osPriorityLow, 0, 128);
   tskTemperatureHandle = osThreadCreate(osThread(tskTemperature), NULL);
+
+  /* definition and creation of tskTouch */
+  osThreadDef(tskTouch, fnTouch, osPriorityAboveNormal, 0, 128);
+  tskTouchHandle = osThreadCreate(osThread(tskTouch), NULL);
 
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
@@ -242,19 +255,25 @@ void fnIdel(void const * argument)
 void fnDisplay(void const * argument)
 {
   /* USER CODE BEGIN fnDisplay */
-	lcd.Fill(0, 0, lcd.GetWidth(), lcd.GetHeight(), 0x0000);
-	srand(HAL_GetTick());
 	char msg[32];
+	lcd.Fill(0, 0, lcd.GetWidth(), lcd.GetHeight(), 0x0000);
+
 	uint16_t id = STMPE811ReadID();
 	sprintf(msg, "0x%04X", id);
 	String(0,80, RGB(0xff,0xff,0x00), RGB(0x00,0x00,0x00), msg, &lcd, &oCRAExtended_24ptDesc);
 	STMPE811Start();
+	touch_state = STMPE811Read(0x0b);
+	touch_x = 0;
+	touch_y = 0;
+	//uint16_t touch_x_prev=touch_x, touch_y_prev=touch_y;
+
 	LL_TIM_EnableIT_UPDATE(TIM4);
 	LL_TIM_EnableCounter(TIM4);
 	LL_TIM_EnableIT_UPDATE(TIM5);
 	LL_TIM_EnableCounter(TIM5);
 	LL_TIM_EnableExternalClock(TIM2);
 	LL_TIM_EnableCounter(TIM2);
+
 	/* Infinite loop */
 	for(;;)
 	{
@@ -269,37 +288,69 @@ void fnDisplay(void const * argument)
 				sprintf(msg, "%7.3f", temperature);
 			}
 			String(0,40, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &firaCode_24ptDesc);
+
+			sprintf(msg, "%5d, %5d", touch_x, touch_y);
+			String(0,lcd.GetHeight()-oCRAExtended_24ptDesc.Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &oCRAExtended_24ptDesc);
+			sprintf(msg, "%2x", touch_state);
+			String(0,lcd.GetHeight()-2*oCRAExtended_24ptDesc.Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &oCRAExtended_24ptDesc);
+			//Line(touch_x_prev*lcd.GetWidth()/4096, touch_y_prev*lcd.GetHeight()/4096, touch_x*lcd.GetWidth()/4096,  touch_y*lcd.GetHeight()/4096, 0xff00, &lcd);
+
+			//touch_x_prev=touch_x;
+			//touch_y_prev=touch_y;
+
 			LL_GPIO_TogglePin(LD4_GPIO_Port, LD4_Pin);
 		}
 	}
-  /* USER CODE END fnDisplay */
+	/* USER CODE END fnDisplay */
 }
 
 /* USER CODE BEGIN Header_fnTemperature */
 /**
-* @brief Function implementing the tskTemperature thread.
-* @param argument: Not used
-* @retval None
-*/
+ * @brief Function implementing the tskTemperature thread.
+ * @param argument: Not used
+ * @retval None
+ */
 /* USER CODE END Header_fnTemperature */
 void fnTemperature(void const * argument)
 {
-  /* USER CODE BEGIN fnTemperature */
-  /* Infinite loop */
-  for(;;)
-  {
-    osDelay(450);
-    temperature = DS18B20Convert(DS18B20_GPIO_Port,DS18B20_Pin);
-  }
-  /* USER CODE END fnTemperature */
+	/* USER CODE BEGIN fnTemperature */
+	/* Infinite loop */
+	for(;;)
+	{
+		osDelay(450);
+		temperature = DS18B20Convert(DS18B20_GPIO_Port,DS18B20_Pin);
+	}
+	/* USER CODE END fnTemperature */
+}
+
+/* USER CODE BEGIN Header_fnTouch */
+/**
+ * @brief Function implementing the tskTouch thread.
+ * @param argument: Not used
+ * @retval None
+ */
+/* USER CODE END Header_fnTouch */
+void fnTouch(void const * argument)
+{
+	/* USER CODE BEGIN fnTouch */
+	/* Infinite loop */
+	for(;;)
+	{
+		osEvent e = osMessageGet(queTouchHandle, 700);
+		if(e.status == osEventMessage){
+			touch_state = STMPE811Read(0x0b);
+			STMPE811GetXY(&touch_x, &touch_y, lcd.GetWidth(), lcd.GetHeight());
+		}
+	}
+	/* USER CODE END fnTouch */
 }
 
 /* cbKeyDown function */
 void cbKeyDown(void const * argument)
 {
-  /* USER CODE BEGIN cbKeyDown */
-  
-  /* USER CODE END cbKeyDown */
+	/* USER CODE BEGIN cbKeyDown */
+
+	/* USER CODE END cbKeyDown */
 }
 
 /* Private application code --------------------------------------------------*/

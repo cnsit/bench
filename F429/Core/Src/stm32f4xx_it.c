@@ -47,7 +47,7 @@
 
 /* Private variables ---------------------------------------------------------*/
 /* USER CODE BEGIN PV */
-extern osMessageQId queFrameHandle;
+extern osMessageQId queFrameHandle, queTouchHandle;
 extern __IO uint32_t freq_count;
 /* USER CODE END PV */
 
@@ -212,9 +212,8 @@ void EXTI15_10_IRQHandler(void)
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_15) != RESET)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_15);
-		osMessagePut(queTouchHandle, 0, 0);
     /* USER CODE BEGIN LL_EXTI_LINE_15 */
-		STMPE811ClearTouchIT();
+		osMessagePut(queTouchHandle, 0, 0);
     /* USER CODE END LL_EXTI_LINE_15 */
   }
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */
