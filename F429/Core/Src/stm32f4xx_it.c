@@ -27,6 +27,7 @@
 /* USER CODE BEGIN Includes */
 #include "cmsis_os.h"
 #include "i2c.h"
+#include "../../Board/Inc/board.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -211,13 +212,9 @@ void EXTI15_10_IRQHandler(void)
   if (LL_EXTI_IsActiveFlag_0_31(LL_EXTI_LINE_15) != RESET)
   {
     LL_EXTI_ClearFlag_0_31(LL_EXTI_LINE_15);
+		osMessagePut(queTouchHandle, 0, 0);
     /* USER CODE BEGIN LL_EXTI_LINE_15 */
-	uint8_t dataXYZ[4];//h5e444034e58d7
-	if(HAL_I2C_Mem_Read(&hi2c3, 0x82, 0xd7, I2C_MEMADD_SIZE_8BIT, dataXYZ, 4, 100) == HAL_OK){
-		uint32_t uldataXYZ = (dataXYZ[0] << 24)|(dataXYZ[1] << 16)|(dataXYZ[2] << 8)|(dataXYZ[3] << 0);
-		  uint16_t X = (uldataXYZ >> 20) & 0x00000FFF;
-		  uint16_t Y = (uldataXYZ >>  8) & 0x00000FFF;
-	}
+		STMPE811ClearTouchIT();
     /* USER CODE END LL_EXTI_LINE_15 */
   }
   /* USER CODE BEGIN EXTI15_10_IRQn 1 */

@@ -245,9 +245,10 @@ void fnDisplay(void const * argument)
 	lcd.Fill(0, 0, lcd.GetWidth(), lcd.GetHeight(), 0x0000);
 	srand(HAL_GetTick());
 	char msg[32];
-	uint16_t id = read_id();
+	uint16_t id = STMPE811ReadID();
 	sprintf(msg, "0x%04X", id);
 	String(0,80, RGB(0xff,0xff,0x00), RGB(0x00,0x00,0x00), msg, &lcd, &oCRAExtended_24ptDesc);
+	STMPE811Start();
 	LL_TIM_EnableIT_UPDATE(TIM4);
 	LL_TIM_EnableCounter(TIM4);
 	LL_TIM_EnableIT_UPDATE(TIM5);
