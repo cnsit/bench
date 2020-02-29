@@ -12,7 +12,7 @@
 
 #define I2CADDR 0x82
 I2C_HandleTypeDef* DEVICE = &hi2c3;
-#define IT_SOURCE (STMPE811_GIT_TOUCH | STMPE811_GIT_FTH |  STMPE811_GIT_FOV | STMPE811_GIT_FF | STMPE811_GIT_FE)
+#define IT_SOURCE (STMPE811_GIT_TOUCH | STMPE811_GIT_FTH |  STMPE811_GIT_FOV | STMPE811_GIT_FF)
 
 uint16_t STMPE811ReadID(){
 	uint8_t id[2];
@@ -87,7 +87,7 @@ void STMPE811Start()
 	STMPE811Write(STMPE811_REG_TSC_CFG, 0x9A);
 
 	/* Configure the Touch FIFO threshold: single point reading */
-	STMPE811Write(STMPE811_REG_FIFO_TH, 0x02);
+	STMPE811Write(STMPE811_REG_FIFO_TH, 0x20);
 
 	/* Clear the FIFO memory content. */
 	STMPE811Write(STMPE811_REG_FIFO_STA, 0x01);
@@ -120,7 +120,7 @@ void STMPE811Start()
 void STMPE811ClearIT()
 {
 	/* Write 1 to the bits that have to be cleared */
-	STMPE811Write(STMPE811_REG_INT_STA, IT_SOURCE);
+	STMPE811Write(STMPE811_REG_INT_STA, STMPE811_TS_IT);
 }
 void STMPE811CoordTrans(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t height, uint16_t x_raw, uint16_t y_raw){
 	/* Y value first correction */
@@ -171,7 +171,7 @@ void STMPE811CoordTrans(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint
 void STMPE811GetXY(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t height){
 	//if(!(STMPE811Read(0x0b)&(STMPE811_GIT_FE|STMPE811_GIT_TOUCH))){
 	STMPE811DisableIT();
-	while(!(STMPE811Read(0x0b)&STMPE811_GIT_FE)){
+	while(!(STMPE811Read(STMPE811_REG_FIFO_STA)&0x20)){
 		uint8_t dataXYZ[4];//h5e444034e58d7
 		if(HAL_I2C_Mem_Read(DEVICE, I2CADDR, STMPE811_REG_TSC_DATA_NON_INC, I2C_MEMADD_SIZE_8BIT, dataXYZ, 4, 100) == HAL_OK){
 			uint16_t x_raw = (dataXYZ[0]<<4)|((dataXYZ[1]&0xf0)>>4);

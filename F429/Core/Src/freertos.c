@@ -32,13 +32,14 @@
 #include "../../Board/Inc/board.h"
 #include "../../CNSIT/Inc/GRAPHICS.h"
 #include "../../CNSIT/Inc/DS18B20.h"
-#include "../../CNSIT/Font/FONT_FIRACODE_24PT.h"
-#include "../../CNSIT/Font/FONT_OCR_A_24PT.h"
+//#include "../../CNSIT/Font/FONT_ENHANCED_DOT_DIGITAL_16PT.h"
+//const CNSITFontDescTypeDef* font = &enhancedDotDigital7_16ptDesc;
+#include "../../CNSIT/Font/FONT_APPLE_][_12PT.h"
+const CNSITFontDescTypeDef* font = &apple_12ptDesc;
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
 /* USER CODE BEGIN PTD */
-
 /* USER CODE END PTD */
 
 /* Private define ------------------------------------------------------------*/
@@ -56,7 +57,7 @@
 __IO uint32_t freq_count;
 __IO float temperature;
 __IO uint16_t touch_x, touch_y;
-__IO uint8_t touch_state;
+__IO uint8_t touch_int, touch_fifo;
 /* USER CODE END Variables */
 osThreadId tskIdelHandle;
 osThreadId tskDisplayHandle;
@@ -257,12 +258,10 @@ void fnDisplay(void const * argument)
   /* USER CODE BEGIN fnDisplay */
 	char msg[32];
 	lcd.Fill(0, 0, lcd.GetWidth(), lcd.GetHeight(), 0x0000);
-
 	uint16_t id = STMPE811ReadID();
 	sprintf(msg, "0x%04X", id);
-	String(0,80, RGB(0xff,0xff,0x00), RGB(0x00,0x00,0x00), msg, &lcd, &oCRAExtended_24ptDesc);
+	String(0,80, RGB(0xff,0xff,0x00), RGB(0x00,0x00,0x00), msg, &lcd, font);
 	STMPE811Start();
-	touch_state = STMPE811Read(0x0b);
 	touch_x = 0;
 	touch_y = 0;
 	//uint16_t touch_x_prev=touch_x, touch_y_prev=touch_y;
@@ -281,18 +280,20 @@ void fnDisplay(void const * argument)
 		if(e.status == osEventMessage){
 			//board_demo();
 			sprintf(msg, "%ld", freq_count);
-			String(0,0, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &firaCode_24ptDesc);
+			String(0,0, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, font);
 			if(temperature>=0){
 				sprintf(msg, "+%6.3f", temperature);
 			}else{
 				sprintf(msg, "%7.3f", temperature);
 			}
-			String(0,40, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &firaCode_24ptDesc);
+			String(0,40, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, font);
 
 			sprintf(msg, "%5d, %5d", touch_x, touch_y);
-			String(0,lcd.GetHeight()-oCRAExtended_24ptDesc.Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &oCRAExtended_24ptDesc);
-			sprintf(msg, "%2x", touch_state);
-			String(0,lcd.GetHeight()-2*oCRAExtended_24ptDesc.Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, &oCRAExtended_24ptDesc);
+			String(0,lcd.GetHeight()-font->Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, font);
+			sprintf(msg, " INT:%2x", touch_int);
+			String(0,260, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, font);
+			sprintf(msg, "FIFO:%2x", touch_fifo);
+			String(0,260-font->Height, RGB(0xff,0xff,0x00), 0x0000, msg, &lcd, font);
 			//Line(touch_x_prev*lcd.GetWidth()/4096, touch_y_prev*lcd.GetHeight()/4096, touch_x*lcd.GetWidth()/4096,  touch_y*lcd.GetHeight()/4096, 0xff00, &lcd);
 
 			//touch_x_prev=touch_x;
@@ -338,7 +339,8 @@ void fnTouch(void const * argument)
 	{
 		osEvent e = osMessageGet(queTouchHandle, 700);
 		if(e.status == osEventMessage){
-			touch_state = STMPE811Read(0x0b);
+			touch_int = STMPE811Read(0x0b);
+			touch_fifo = STMPE811Read(0x4b);
 			STMPE811GetXY(&touch_x, &touch_y, lcd.GetWidth(), lcd.GetHeight());
 		}
 	}
