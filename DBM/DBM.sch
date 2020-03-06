@@ -285,76 +285,6 @@ Wire Wire Line
 	4450 2900 4450 2950
 Wire Wire Line
 	4850 2900 4850 2950
-$Comp
-L Device:D_ALT D5
-U 1 1 5E62A2D0
-P 4450 2400
-F 0 "D5" V 4496 2321 50  0000 R CNN
-F 1 "1N60" V 4405 2321 50  0000 R CNN
-F 2 "cnsit:SMT_DIODE" H 4450 2400 50  0001 C CNN
-F 3 "~" H 4450 2400 50  0001 C CNN
-	1    4450 2400
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:D_ALT D6
-U 1 1 5E62A2DA
-P 4850 2400
-F 0 "D6" V 4804 2479 50  0000 L CNN
-F 1 "1N60" V 4895 2479 50  0000 L CNN
-F 2 "cnsit:SMT_DIODE" H 4850 2400 50  0001 C CNN
-F 3 "~" H 4850 2400 50  0001 C CNN
-	1    4850 2400
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	4450 2250 4450 2200
-Wire Wire Line
-	4850 2200 4850 2250
-$Comp
-L Device:D_ALT D7
-U 1 1 5E62B75D
-P 4450 3500
-F 0 "D7" V 4496 3421 50  0000 R CNN
-F 1 "1N60" V 4405 3421 50  0000 R CNN
-F 2 "cnsit:SMT_DIODE" H 4450 3500 50  0001 C CNN
-F 3 "~" H 4450 3500 50  0001 C CNN
-	1    4450 3500
-	0    -1   -1   0   
-$EndComp
-$Comp
-L Device:D_ALT D8
-U 1 1 5E62B767
-P 4850 3500
-F 0 "D8" V 4800 3800 50  0000 L CNN
-F 1 "1N60" V 4900 3800 50  0000 L CNN
-F 2 "cnsit:SMT_DIODE" H 4850 3500 50  0001 C CNN
-F 3 "~" H 4850 3500 50  0001 C CNN
-	1    4850 3500
-	0    1    1    0   
-$EndComp
-Wire Wire Line
-	4850 3700 4850 3650
-Wire Wire Line
-	4450 2200 4850 2200
-Wire Wire Line
-	3800 2550 3900 2550
-Wire Wire Line
-	3900 2550 3900 2200
-Wire Wire Line
-	3900 2200 4450 2200
-Connection ~ 4450 2200
-Wire Wire Line
-	3800 3350 3900 3350
-Wire Wire Line
-	3900 3350 3900 3700
-Wire Wire Line
-	3900 3700 4450 3700
-Wire Wire Line
-	4450 3650 4450 3700
-Connection ~ 4450 3700
-Wire Wire Line
-	4450 3700 4850 3700
 Wire Wire Line
 	4850 2950 5050 2950
 Wire Wire Line
@@ -393,6 +323,38 @@ F 1 "IF" H 5950 3935 50  0000 L CNN
 F 2 "cnsit:SMA_Amphenol_901-144_Vertical" H 5850 4050 50  0001 C CNN
 F 3 " ~" H 5850 4050 50  0001 C CNN
 	1    5850 4050
+	1    0    0    -1  
+$EndComp
+Wire Wire Line
+	3800 2550 4450 2550
+Connection ~ 4450 2550
+Wire Wire Line
+	4450 2550 4850 2550
+Wire Wire Line
+	3800 3350 4450 3350
+Connection ~ 4450 3350
+Wire Wire Line
+	4450 3350 4850 3350
+$Comp
+L Mechanical:MountingHole H1
+U 1 1 5E694525
+P 2700 4250
+F 0 "H1" H 2800 4300 50  0000 L CNN
+F 1 "MountingHole" H 2800 4200 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 2700 4250 50  0001 C CNN
+F 3 "~" H 2700 4250 50  0001 C CNN
+	1    2700 4250
+	1    0    0    -1  
+$EndComp
+$Comp
+L Mechanical:MountingHole H2
+U 1 1 5E694960
+P 2700 4500
+F 0 "H2" H 2800 4550 50  0000 L CNN
+F 1 "MountingHole" H 2800 4450 50  0000 L CNN
+F 2 "MountingHole:MountingHole_3.2mm_M3" H 2700 4500 50  0001 C CNN
+F 3 "~" H 2700 4500 50  0001 C CNN
+	1    2700 4500
 	1    0    0    -1  
 $EndComp
 $EndSCHEMATC
