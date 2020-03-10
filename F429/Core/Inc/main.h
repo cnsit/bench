@@ -31,6 +31,8 @@ extern "C" {
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_ll_adc.h"
 #include "stm32f4xx_ll_crc.h"
+#include "stm32f4xx_ll_dac.h"
+#include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_dma2d.h"
 #include "stm32f4xx_hal.h"
 #include "stm32f4xx_ll_rcc.h"
@@ -40,7 +42,6 @@ extern "C" {
 #include "stm32f4xx_ll_cortex.h"
 #include "stm32f4xx_ll_utils.h"
 #include "stm32f4xx_ll_pwr.h"
-#include "stm32f4xx_ll_dma.h"
 #include "stm32f4xx_ll_spi.h"
 #include "stm32f4xx_ll_tim.h"
 #include "stm32f4xx_ll_usart.h"
@@ -105,9 +106,6 @@ void Error_Handler(void);
 #define NCS_MEMS_SPI_GPIO_Port GPIOC
 #define CSX_Pin LL_GPIO_PIN_2
 #define CSX_GPIO_Port GPIOC
-#define B1_Pin LL_GPIO_PIN_0
-#define B1_GPIO_Port GPIOA
-#define B1_EXTI_IRQn EXTI0_IRQn
 #define MEMS_INT1_Pin LL_GPIO_PIN_1
 #define MEMS_INT1_GPIO_Port GPIOA
 #define MEMS_INT2_Pin LL_GPIO_PIN_2
@@ -214,9 +212,6 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin LL_GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define TP_INT1_Pin LL_GPIO_PIN_15
-#define TP_INT1_GPIO_Port GPIOA
-#define TP_INT1_EXTI_IRQn EXTI15_10_IRQn
 #define R2_Pin LL_GPIO_PIN_10
 #define R2_GPIO_Port GPIOC
 #define D2_Pin LL_GPIO_PIN_0

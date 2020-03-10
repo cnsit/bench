@@ -8,3 +8,7 @@ DBM/DBM-cache.lib
 DBM/DBM.net
 DBM/fp-info-cache
 output
+*.sch-bak
+*-cache.lib
+*.*-bak
+*-cache

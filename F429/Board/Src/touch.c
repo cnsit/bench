@@ -41,6 +41,11 @@ void STMPE811DisableIT(){
 	/* Write Back the Interrupt Control register */
 	STMPE811Write(STMPE811_REG_INT_CTRL, 0);
 }
+void STMPE811ClearIT()
+{
+	/* Write 1 to the bits that have to be cleared */
+	STMPE811Write(STMPE811_REG_INT_STA, STMPE811_TS_IT);
+}
 void STMPE811Start()
 {
 	uint8_t mode;
@@ -113,14 +118,9 @@ void STMPE811Start()
 	/*  Clear all the status pending bits if any */
 	STMPE811Write(STMPE811_REG_INT_STA, 0xFF);
 
-	STMPE811EnableIT();
+	STMPE811DisableIT();
 	/* Wait for 2 ms delay */
 	LL_mDelay(2);
-}
-void STMPE811ClearIT()
-{
-	/* Write 1 to the bits that have to be cleared */
-	STMPE811Write(STMPE811_REG_INT_STA, STMPE811_TS_IT);
 }
 void STMPE811CoordTrans(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t height, uint16_t x_raw, uint16_t y_raw){
 	/* Y value first correction */
@@ -170,15 +170,18 @@ void STMPE811CoordTrans(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint
 }
 void STMPE811GetXY(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t height){
 	//if(!(STMPE811Read(0x0b)&(STMPE811_GIT_FE|STMPE811_GIT_TOUCH))){
-	STMPE811DisableIT();
+	//STMPE811DisableIT();
 	while(!(STMPE811Read(STMPE811_REG_FIFO_STA)&0x20)){
 		uint8_t dataXYZ[4];//h5e444034e58d7
 		if(HAL_I2C_Mem_Read(DEVICE, I2CADDR, STMPE811_REG_TSC_DATA_NON_INC, I2C_MEMADD_SIZE_8BIT, dataXYZ, 4, 100) == HAL_OK){
 			uint16_t x_raw = (dataXYZ[0]<<4)|((dataXYZ[1]&0xf0)>>4);
 			uint16_t y_raw = ((dataXYZ[1]&0x0f)<<8)|dataXYZ[2];
 			//STMPE811CoordTrans(x, y, width, height, x_raw, y_raw);
-			*x = x_raw;
-			*y = y_raw;
+
+			if(STMPE811Read(STMPE811_REG_INT_STA)&STMPE811_GIT_TOUCH){
+				*x = x_raw;
+				*y = y_raw;
+			}
 		}
 	}
 	/* Reset FIFO */
@@ -187,5 +190,5 @@ void STMPE811GetXY(__IO uint16_t *x, __IO uint16_t *y, uint16_t width, uint16_t 
 	//STMPE811Write(STMPE811_REG_FIFO_STA, 0x00);
 	//}
 	STMPE811ClearIT();
-	STMPE811EnableIT();
+	//STMPE811EnableIT();
 }

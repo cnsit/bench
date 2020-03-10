@@ -23,6 +23,8 @@
 #include "cmsis_os.h"
 #include "adc.h"
 #include "crc.h"
+#include "dac.h"
+#include "dma.h"
 #include "dma2d.h"
 #include "i2c.h"
 #include "ltdc.h"
@@ -54,7 +56,7 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+extern osMessageQId queTouchHandle;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -97,6 +99,7 @@ int main(void)
 
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
+  MX_DMA_Init();
   MX_CRC_Init();
   MX_DMA2D_Init();
   MX_FMC_Init();
@@ -109,6 +112,11 @@ int main(void)
   MX_TIM2_Init();
   MX_TIM4_Init();
   MX_TIM5_Init();
+  MX_DAC_Init();
+  MX_ADC2_Init();
+  MX_ADC3_Init();
+  MX_TIM7_Init();
+  MX_TIM10_Init();
   /* USER CODE BEGIN 2 */
   board_init(hltdc.LayerCfg[0].FBStartAdress);
   /* USER CODE END 2 */
@@ -208,7 +216,10 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
-
+	if(htim->Instance == TIM10){
+		osMessagePut(queTouchHandle, 0, 0);
+		LL_TIM_ClearFlag_UPDATE(TIM10);
+	}
   /* USER CODE END Callback 1 */
 }
 
