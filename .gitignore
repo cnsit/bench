@@ -1,0 +1,14 @@
+Debug
+Drivers
+Middlewares
+USB_HOST
+DBM/DBM.sch-bak
+DBM/DBM.kicad_pcb-bak
+DBM/DBM-cache.lib
+DBM/DBM.net
+DBM/fp-info-cache
+output
+*.sch-bak
+*-cache.lib
+*.*-bak
+*-cache
